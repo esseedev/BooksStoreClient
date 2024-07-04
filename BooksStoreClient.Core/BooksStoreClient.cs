@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace BooksStoreClient.Core;
 
-public sealed class BooksStoreClient(HttpClient httpClient, IOptions<BooksStoreSettings> settings): IBooksStoreClient
+public class BooksStoreClient(HttpClient httpClient, IOptions<BooksStoreSettings> settings): IBooksStoreClient
 {
     private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     private readonly BooksStoreSettings _settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
@@ -23,11 +23,11 @@ public sealed class BooksStoreClient(HttpClient httpClient, IOptions<BooksStoreS
         await using var contentStream = await result.Content.ReadAsStreamAsync(cancellationToken);
         var books = await JsonSerializer.DeserializeAsync<List<BooksDto>>(contentStream, 
             DefaultJsonSerializerOptions.Options, cancellationToken) 
-               ??  new List<BooksDto>();
+               ??  new List<BooksDto>(); //There should be null object pattern
         return new ReadOnlyCollection<BooksDto>(books);
     }
 
-    // to optimize this more I would use Data Paging
+    // to optimize this more I could use Data Paging
     public async Task<IReadOnlyCollection<OrdersDto>> GetOrders(CancellationToken cancellationToken)
     {
         var request = CreateGetRequest(_settings.OrdersPath);
