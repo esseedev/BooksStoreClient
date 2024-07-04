@@ -5,16 +5,18 @@ using System.Text.Json;
 using Common;
 using Common.Domain;
 using Common.Dto;
+using Microsoft.Extensions.Options;
 
 namespace BooksStoreClient.Core;
 
-public sealed class BooksStoreClient(HttpClient httpClient): IBooksStoreClient
+public sealed class BooksStoreClient(HttpClient httpClient, IOptions<BooksStoreSettings> settings): IBooksStoreClient
 {
     private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+    private readonly BooksStoreSettings _settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
 
     public async Task<IReadOnlyCollection<BooksDto>> GetBooks(CancellationToken cancellationToken)
     {
-        var request = CreateGetRequest(BooksStoreConstants.BooksPath);
+        var request = CreateGetRequest(_settings.ApiBaseUrl);
         using var result = await _httpClient
             .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
@@ -28,7 +30,7 @@ public sealed class BooksStoreClient(HttpClient httpClient): IBooksStoreClient
     // to optimize this more I would use Data Paging
     public async Task<IReadOnlyCollection<OrdersDto>> GetOrders(CancellationToken cancellationToken)
     {
-        var request = CreateGetRequest(BooksStoreConstants.OrdersPath);
+        var request = CreateGetRequest(_settings.OrdersPath);
         using var result = await _httpClient
             .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
@@ -42,14 +44,13 @@ public sealed class BooksStoreClient(HttpClient httpClient): IBooksStoreClient
     public async Task PostBooks(BooksDto newBook, CancellationToken cancellationToken)
     {
         var jsonContent = new StringContent(JsonSerializer.Serialize(newBook), Encoding.UTF8, "application/json");
-        var request = new HttpRequestMessage(HttpMethod.Post, BooksStoreConstants.BooksPath)
+        var request = new HttpRequestMessage(HttpMethod.Post, _settings.BooksPath)
         {
             Content = jsonContent
         };
 
-        using var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
-        
     }
 
     private static HttpRequestMessage CreateGetRequest(string uri)
