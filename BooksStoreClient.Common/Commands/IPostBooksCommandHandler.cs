@@ -2,7 +2,7 @@ using Common.Dto;
 
 namespace Common.Commands;
 
-public interface IPostBooksCommand
+public interface IPostBooksCommandHandler
 {
     Task Execute(BooksDto newBooks, CancellationToken cancellationToken);
 }

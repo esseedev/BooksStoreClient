@@ -3,7 +3,7 @@ using Common.Dto;
 
 namespace BooksStoreClient.Core.Command;
 
-public class PostBooksCommandHandler(BooksStoreClient booksStoreClient) : IPostBooksCommand
+public class PostBooksCommandHandler(BooksStoreClient booksStoreClient) : IPostBooksCommandHandler
 {
     private readonly BooksStoreClient _booksStoreClient = 
         booksStoreClient ?? throw new ArgumentNullException(nameof(booksStoreClient));
