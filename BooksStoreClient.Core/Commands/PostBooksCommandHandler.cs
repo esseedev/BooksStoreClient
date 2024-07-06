@@ -6,7 +6,7 @@ namespace BooksStoreClient.Core.Commands;
 public abstract class PostBooksCommandHandler(IHttpClientFactory factory)
 {
     private readonly IHttpClientFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-    public async Task Handle(PostBooksCommand command)
+    public async Task HandleAsync(PostBooksCommand command)
     {
         var client = _factory.CreateClient("BooksStoreClient");
         var jsonContent = new StringContent(JsonSerializer.Serialize(command.NewBooks), Encoding.UTF8, "application/json");

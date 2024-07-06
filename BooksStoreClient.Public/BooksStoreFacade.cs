@@ -9,36 +9,33 @@ using BooksStoreClient.Shared.Dto;
 namespace BooksStoreClient.Public;
 
 public class BooksStoreFacade(
-    HttpClient httpClient, 
     GetAllBooksQuery getAllBooksQuery,
     GetAllOrdersQuery getAllOrdersQuery,
     PostBooksCommandHandler postBooksCommandHandler
     ) : IBooksStoreFacade
 {
-    private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     private readonly GetAllBooksQuery _getAllBooksQuery =
         getAllBooksQuery ?? throw new ArgumentNullException(nameof(getAllBooksQuery));
     private readonly GetAllOrdersQuery _getAllOrdersQuery =
         getAllOrdersQuery ?? throw new ArgumentNullException(nameof(getAllOrdersQuery));
-
     private readonly PostBooksCommandHandler _postBooksCommandHandler =
         postBooksCommandHandler ?? throw new ArgumentNullException(nameof(postBooksCommandHandler));
 
     public async Task<IReadOnlyCollection<BooksDto>> GetBooksAsync(CancellationToken cancellationToken)
     {
-        return await _getAllBooksQuery.Execute(new CancellationToken());
+        return await _getAllBooksQuery.ExecuteAsync(cancellationToken);
     }
 
     // to optimize this more I could use Data Paging
     public async Task<IReadOnlyCollection<OrdersDto>> GetOrdersAsync(CancellationToken cancellationToken)
     {
-        return await _getAllOrdersQuery.Execute(new CancellationToken());
+        return await _getAllOrdersQuery.ExecuteAsync(cancellationToken);
     }
 
     public async Task PostBooksAsync(BooksDto newBook, CancellationToken cancellationToken)
     {
-        var command = new PostBooksCommand(newBook, new CancellationToken());
-        await _postBooksCommandHandler.Handle(command);
+        var command = new PostBooksCommand(newBook, cancellationToken);
+        await _postBooksCommandHandler.HandleAsync(command);
     }
 }

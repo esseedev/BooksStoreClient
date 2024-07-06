@@ -7,7 +7,7 @@ namespace BooksStoreClient.Core.Queries;
 public class GetAllOrdersQuery(IHttpClientFactory factory)
 {
     private readonly IHttpClientFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-    public async Task<IReadOnlyCollection<OrdersDto>> Execute(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<OrdersDto>> ExecuteAsync(CancellationToken cancellationToken)
     {
         var client = _factory.CreateClient("BooksStoreClient");
         using var result = await client
