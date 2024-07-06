@@ -2,8 +2,6 @@
 
 ##### How to use:
 - in your web api project in startup class pass `ApiBaseUrl` and `Token`
-  
-  example:
   ```
   builder.Services.AddBooksStoreClient(options =>
   {
