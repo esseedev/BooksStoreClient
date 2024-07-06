@@ -22,20 +22,20 @@ public class BooksStoreFacade(
     private readonly PostBooksCommandHandler _postBooksCommandHandler =
         postBooksCommandHandler ?? throw new ArgumentNullException(nameof(postBooksCommandHandler));
 
-    public async Task<IReadOnlyCollection<BooksDto>> GetBooksAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<BookDto>> GetBooksAsync(CancellationToken cancellationToken)
     {
         return await _getAllBooksQuery.ExecuteAsync(cancellationToken);
     }
 
     // to optimize this more I could use Data Paging
-    public async Task<IReadOnlyCollection<OrdersDto>> GetOrdersAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<OrderDto>> GetOrdersAsync(CancellationToken cancellationToken)
     {
         return await _getAllOrdersQuery.ExecuteAsync(cancellationToken);
     }
 
-    public async Task PostBooksAsync(BooksDto newBook, CancellationToken cancellationToken)
+    public async Task PostBooksAsync(List<BookDto> newBooks, CancellationToken cancellationToken)
     {
-        var command = new PostBooksCommand(newBook, cancellationToken);
+        var command = new PostBooksCommand(newBooks, cancellationToken);
         await _postBooksCommandHandler.HandleAsync(command);
     }
 }

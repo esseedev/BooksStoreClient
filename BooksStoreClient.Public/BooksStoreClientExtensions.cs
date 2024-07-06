@@ -1,4 +1,5 @@
 using BooksStoreClient.Core;
+using BooksStoreClient.Core.Commands;
 using BooksStoreClient.Core.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -14,10 +15,15 @@ public static class BooksStoreClientExtensions
         services.AddHttpClient("BooksStoreClient", (serviceProvider,client) =>
         {
             var settings = serviceProvider.GetRequiredService<IOptions<BooksStoreSettings>>().Value;
-
+            Console.WriteLine($"Attempting to connect to: {settings.ApiBaseUrl}");
             client.BaseAddress = new Uri(settings.ApiBaseUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.Token}");
         });
+
+        services.AddScoped<IBooksStoreFacade, BooksStoreFacade>();
+        services.AddScoped<GetAllBooksQuery>();
+        services.AddScoped<GetAllOrdersQuery>();
+        services.AddScoped<PostBooksCommandHandler>();
         
         return services;
     }

@@ -4,7 +4,7 @@ namespace BooksStoreClient.Public;
 
 public interface IBooksStoreFacade
 {
-    Task<IReadOnlyCollection<BooksDto>> GetBooksAsync(CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<OrdersDto>> GetOrdersAsync(CancellationToken cancellationToken);
-    Task PostBooksAsync(BooksDto newBook, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<BookDto>> GetBooksAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<OrderDto>> GetOrdersAsync(CancellationToken cancellationToken);
+    Task PostBooksAsync(List<BookDto> newBooks, CancellationToken cancellationToken);
 }
