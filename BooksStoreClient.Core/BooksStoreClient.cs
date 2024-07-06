@@ -1,24 +1,18 @@
 using System.Collections.ObjectModel;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Common;
-using Common.Domain;
-using Common.Dto;
-using Microsoft.Extensions.Options;
+using BooksStoreClient.Core.Dto;
 
 namespace BooksStoreClient.Core;
 
-public class BooksStoreClient(HttpClient httpClient, IOptions<BooksStoreSettings> settings): IBooksStoreClient
+public class BooksStoreClient(HttpClient httpClient) : IBooksStoreClient
 {
     private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-    private readonly BooksStoreSettings _settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
 
-    public async Task<IReadOnlyCollection<BooksDto>> GetBooks(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<BooksDto>> GetBooksAsync(CancellationToken cancellationToken)
     {
-        var request = CreateGetRequest(_settings.ApiBaseUrl);
         using var result = await _httpClient
-            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+            .GetAsync(BooksStoreConstants.BooksPath, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
         await using var contentStream = await result.Content.ReadAsStreamAsync(cancellationToken);
         var books = await JsonSerializer.DeserializeAsync<List<BooksDto>>(contentStream, 
@@ -28,11 +22,10 @@ public class BooksStoreClient(HttpClient httpClient, IOptions<BooksStoreSettings
     }
 
     // to optimize this more I could use Data Paging
-    public async Task<IReadOnlyCollection<OrdersDto>> GetOrders(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<OrdersDto>> GetOrdersAsync(CancellationToken cancellationToken)
     {
-        var request = CreateGetRequest(_settings.OrdersPath);
         using var result = await _httpClient
-            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+            .GetAsync(BooksStoreConstants.OrdersPath, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
         await using var contentStream = await result.Content.ReadAsStreamAsync(cancellationToken);
         var orders = await JsonSerializer.DeserializeAsync<List<OrdersDto>>(contentStream,
@@ -41,14 +34,14 @@ public class BooksStoreClient(HttpClient httpClient, IOptions<BooksStoreSettings
         return new ReadOnlyCollection<OrdersDto>(orders);
     }
 
-    public async Task PostBooks(BooksDto newBook, CancellationToken cancellationToken)
+    public async Task PostBooksAsync(BooksDto newBook, CancellationToken cancellationToken)
     {
         var jsonContent = new StringContent(JsonSerializer.Serialize(newBook), Encoding.UTF8, "application/json");
-        var request = new HttpRequestMessage(HttpMethod.Post, _settings.BooksPath)
+        var request = new HttpRequestMessage(HttpMethod.Post, BooksStoreConstants.OrdersPath)
         {
             Content = jsonContent
         };
-
+        
         using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
     }
