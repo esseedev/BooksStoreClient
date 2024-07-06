@@ -1,8 +1,8 @@
-using BooksStoreClient.Core.Dto;
+using BooksStoreClient.Shared.Dto;
 
-namespace BooksStoreClient.Core;
+namespace BooksStoreClient.Public;
 
-public interface IBooksStoreClient
+public interface IBooksStoreFacade
 {
     Task<IReadOnlyCollection<BooksDto>> GetBooksAsync(CancellationToken cancellationToken);
     Task<IReadOnlyCollection<OrdersDto>> GetOrdersAsync(CancellationToken cancellationToken);

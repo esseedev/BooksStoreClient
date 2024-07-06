@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BooksStoreClient.Core\BooksStoreClient.Core.csproj" />
+      <ProjectReference Include="..\BooksStoreClient.Shared\BooksStoreClient.Shared.csproj" />
     </ItemGroup>
 
 </Project>
